@@ -4,33 +4,7 @@ import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import Box from "@mui/material/Box";
 import { alpha, styled, SxProps, Theme } from "@mui/material/styles";
 
-// Ensure custom theme types are available
-declare module '@mui/material/styles' {
-  interface Palette {
-    blues?: {
-      50?: string;
-      100?: string;
-      200?: string;
-      400?: string;
-      500?: string;
-      600?: string;
-      700?: string;
-      800?: string;
-      900?: string;
-    };
-    greens?: {
-      50?: string;
-      100?: string;
-      200?: string;
-      400?: string;
-      500?: string;
-      600?: string;
-      700?: string;
-      800?: string;
-      900?: string;
-    };
-  }
-}
+
 import {
   DataGrid,
   gridClasses,
@@ -43,12 +17,12 @@ import {
 // import { useTranslations } from "next-intl";
 
 // Helper function to safely access custom theme colors
-const getBlueColor = (theme: Theme, shade: keyof NonNullable<Theme['palette']['blues']>): string => {
-  return theme.palette.blues?.[shade] || theme.palette.primary.main;
+const getBlueColor = (theme: Theme, shade: 50 | 100 | 200 | 400 | 500 | 600 | 700 | 800 | 900): string => {
+  return theme.palette.blues[shade] || theme.palette.primary.main;
 };
 
-const getGreenColor = (theme: Theme, shade: keyof NonNullable<Theme['palette']['greens']>): string => {
-  return theme.palette.greens?.[shade] || '#4CAF50'; // Fallback to Material Design green
+const getGreenColor = (theme: Theme, shade: 50 | 100 | 200 | 400 | 500 | 600 | 700 | 800 | 900): string => {
+  return theme.palette.greens[shade] || '#4CAF50'; // Fallback to Material Design green
 };
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
@@ -98,10 +72,10 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
   // Alternating row colors: Blue for 1st, 3rd, 5th... and Green for 2nd, 4th, 6th...
   [`& .${gridClasses.row}.odd`]: {
-    backgroundColor: alpha(getBlueColor(theme, '600'), 0.2), // Blue background for odd rows (1st, 3rd, 5th...)
+    backgroundColor: alpha(getBlueColor(theme, 600), 0.2), // Blue background for odd rows (1st, 3rd, 5th...)
   },
   [`& .${gridClasses.row}.even`]: {
-    backgroundColor: alpha(getGreenColor(theme, '600'), 0.2), // Green background for even rows (2nd, 4th, 6th...)
+    backgroundColor: alpha(getGreenColor(theme, 600), 0.2), // Green background for even rows (2nd, 4th, 6th...)
   },
   [`& .${gridClasses.row}.error`]: {
     color: "rgba(255, 0, 0, 0.5)",
@@ -113,19 +87,19 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     borderRadius: "0px",
   },
   "& .MuiDataGrid-row.Mui-selected": {
-    backgroundColor: alpha(getBlueColor(theme, '600'), 0.6),
+    backgroundColor: alpha(getBlueColor(theme, 600), 0.6),
     "&:hover": {
-      backgroundColor: alpha(getBlueColor(theme, '600'), 0.6),
+      backgroundColor: alpha(getBlueColor(theme, 600), 0.6),
     },
   },
   "& .MuiDataGrid-row.odd:hover": {
-    backgroundColor: alpha(getBlueColor(theme, '600'), 0.4), // Darker blue on hover for blue rows
+    backgroundColor: alpha(getBlueColor(theme, 600), 0.4), // Darker blue on hover for blue rows
     ".actionButton": {
       display: "block",
     },
   },
   "& .MuiDataGrid-row.even:hover": {
-    backgroundColor: alpha(getGreenColor(theme, '600'), 0.4), // Darker green on hover for green rows
+    backgroundColor: alpha(getGreenColor(theme, 600), 0.4), // Darker green on hover for green rows
     ".actionButton": {
       display: "block",
     },
