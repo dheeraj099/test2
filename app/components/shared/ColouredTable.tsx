@@ -40,6 +40,9 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   border: 0,
   padding: "0px 12px",
+  minHeight: 300, // Ensure minimum height for the grid itself
+  height: "100%", // Take full height of parent
+  flex: 1, // Allow growth within flex container
   "& .MuiDataGrid-overlayWrapper": {
     height: "100px",
   },
@@ -130,6 +133,7 @@ export default function ColouredDataGridComponent({
   columnHeaderHeight,
   getRowClassName,
   disableMultipleRowSelection,
+  height,
 }: Readonly<{
   data: any[];
   headers: GridColDef<any>[];
@@ -149,6 +153,7 @@ export default function ColouredDataGridComponent({
   columnHeaderHeight?: number;
   getRowClassName?: any;
   disableMultipleRowSelection?: any;
+  height?: number | string; // Optional explicit height for the DataGrid container
 }>) {
   // useTranslations library for translations
   // const t = useTranslations();
@@ -171,7 +176,13 @@ export default function ColouredDataGridComponent({
   }
 
   return (
-    <Box sx={{ height: "100%", width: "100%" }}>
+    <Box sx={{ 
+      height: height || "100%", 
+      width: "100%",
+      minHeight: height ? undefined : 400, // Only use fallback minHeight if no explicit height is provided
+      display: "flex",
+      flexDirection: "column"
+    }}>
       <StyledDataGrid
         rows={data}
         columns={headers}
@@ -224,7 +235,10 @@ export default function ColouredDataGridComponent({
         }
         sx={{
           width: "100%", // Or set a fixed width like '600px' to ensure scrollable behavior
+          height: "100%", // Ensure DataGrid takes full height of container
+          minHeight: 300, // Minimum height fallback
           overflowX: "auto", // Ensures horizontal scrolling is enabled
+          flex: 1, // Allow DataGrid to grow and fill available space
           ...sx,
         }}
         disableMultipleRowSelection={disableMultipleRowSelection ?? false}

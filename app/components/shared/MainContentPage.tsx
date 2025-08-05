@@ -131,12 +131,12 @@ const MainContentPage = () => {
   };
 const theme = useTheme();
   return (
-    <Box sx={{ height: 500, width: "100%" }}>
     <ColouredDataGridComponent
       pageSize={100}
       data={dataWithSno}
       headers={fragmentsTableHeader}
       checkboxSelection={false}
+      height={500} // Direct height prop instead of wrapping Box
       // rowSelectionModel={selectedRows}
       onRowSelectionModelChange={handleRowSelection}
       onRowClick={handleOnRowClick}
@@ -150,7 +150,6 @@ const theme = useTheme();
         },
       }}
     />
-    </Box>
   );
 };
 
