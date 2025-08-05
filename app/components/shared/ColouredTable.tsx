@@ -1,8 +1,8 @@
 // Necessary imports
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import Box from "@mui/material/Box";
 import { alpha, styled, SxProps, Theme } from "@mui/material/styles";
+import { useEffect, useRef, useState } from "react";
 
 
 import {
@@ -174,6 +174,20 @@ export default function ColouredDataGridComponent({
 }>) {
   // useTranslations library for translations
   // const t = useTranslations();
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState<number>(height || 500);
+  
+  useEffect(() => {
+    if (height) {
+      setContainerHeight(height);
+    } else if (containerRef.current?.parentElement) {
+      const parentHeight = containerRef.current.parentElement.offsetHeight;
+      if (parentHeight > 0) {
+        setContainerHeight(parentHeight);
+      }
+    }
+  }, [height]);
 
   const StyledGridOverlay = styled("div")({
     display: "flex",
@@ -192,19 +206,16 @@ export default function ColouredDataGridComponent({
     );
   }
 
-  // Calculate effective height
-  const effectiveHeight = height || 500;
-  
   return (
-    <Box sx={{ 
-      height: effectiveHeight,
-      width: "100%",
-      minHeight: 400,
-      display: "flex",
-      flexDirection: "column",
-      position: "relative",
-      overflow: "hidden" // Prevent layout issues
-    }}>
+    <div 
+      ref={containerRef}
+      style={{ 
+        height: `${containerHeight}px`,
+        width: '100%',
+        minHeight: '400px',
+        position: 'relative'
+      }}
+    >
       <StyledDataGrid
         rows={data}
         columns={headers}
@@ -257,15 +268,12 @@ export default function ColouredDataGridComponent({
         }
         sx={{
           width: "100%",
-          height: effectiveHeight - 20, // Subtract padding/margin for exact fit
-          minHeight: 350,
-          overflowX: "auto",
-          overflowY: "auto",
-          flex: 1,
+          height: `${containerHeight - 20}px`,
+          minHeight: '350px',
           ...sx,
         }}
         disableMultipleRowSelection={disableMultipleRowSelection ?? false}
       />
-    </Box>
+    </div>
   );
 }
