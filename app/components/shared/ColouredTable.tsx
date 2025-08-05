@@ -18,11 +18,31 @@ import {
 
 // Helper function to safely access custom theme colors
 const getBlueColor = (theme: Theme, shade: 50 | 100 | 200 | 400 | 500 | 600 | 700 | 800 | 900): string => {
-  return theme.palette.blues[shade] || theme.palette.primary.main;
+  try {
+    const customPalette = theme.palette as any;
+    if (customPalette.blues && customPalette.blues[shade]) {
+      return customPalette.blues[shade];
+    }
+    console.warn(`Blues palette or shade ${shade} not found, using primary color`);
+    return theme.palette.primary.main;
+  } catch (error) {
+    console.error('Error accessing blues palette:', error);
+    return theme.palette.primary.main;
+  }
 };
 
 const getGreenColor = (theme: Theme, shade: 50 | 100 | 200 | 400 | 500 | 600 | 700 | 800 | 900): string => {
-  return theme.palette.greens[shade] || '#4CAF50'; // Fallback to Material Design green
+  try {
+    const customPalette = theme.palette as any;
+    if (customPalette.greens && customPalette.greens[shade]) {
+      return customPalette.greens[shade];
+    }
+    console.warn(`Greens palette or shade ${shade} not found, using fallback green`);
+    return '#4CAF50'; // Fallback to Material Design green
+  } catch (error) {
+    console.error('Error accessing greens palette:', error);
+    return '#4CAF50';
+  }
 };
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
