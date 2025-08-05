@@ -49,9 +49,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   border: 0,
   padding: "0px 12px",
-  minHeight: 300, // Ensure minimum height for the grid itself
-  height: "100%", // Take full height of parent
-  flex: 1, // Allow growth within flex container
+  // Height and flex properties will be handled in sx props for better control
   "& .MuiDataGrid-overlayWrapper": {
     height: "100px",
   },
@@ -194,13 +192,18 @@ export default function ColouredDataGridComponent({
     );
   }
 
+  // Calculate effective height
+  const effectiveHeight = height || 500;
+  
   return (
     <Box sx={{ 
-      height: height || "100%", 
+      height: effectiveHeight,
       width: "100%",
-      minHeight: height ? undefined : 400, // Only use fallback minHeight if no explicit height is provided
+      minHeight: 400,
       display: "flex",
-      flexDirection: "column"
+      flexDirection: "column",
+      position: "relative",
+      overflow: "hidden" // Prevent layout issues
     }}>
       <StyledDataGrid
         rows={data}
@@ -253,11 +256,12 @@ export default function ColouredDataGridComponent({
             params.indexRelativeToCurrentPage % 2 === 0 ? "odd" : "even")
         }
         sx={{
-          width: "100%", // Or set a fixed width like '600px' to ensure scrollable behavior
-          height: "100%", // Ensure DataGrid takes full height of container
-          minHeight: 300, // Minimum height fallback
-          overflowX: "auto", // Ensures horizontal scrolling is enabled
-          flex: 1, // Allow DataGrid to grow and fill available space
+          width: "100%",
+          height: effectiveHeight - 20, // Subtract padding/margin for exact fit
+          minHeight: 350,
+          overflowX: "auto",
+          overflowY: "auto",
+          flex: 1,
           ...sx,
         }}
         disableMultipleRowSelection={disableMultipleRowSelection ?? false}
