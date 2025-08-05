@@ -1,8 +1,10 @@
 // Necessary imports
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-import Box from "@mui/material/Box";
-import { alpha, styled, SxProps } from "@mui/material/styles";
+import { alpha, styled, SxProps, Theme } from "@mui/material/styles";
+import { useEffect, useRef, useState } from "react";
+
+
 import {
   DataGrid,
   gridClasses,
@@ -14,10 +16,40 @@ import {
 } from "@mui/x-data-grid";
 // import { useTranslations } from "next-intl";
 
+// Helper function to safely access custom theme colors
+const getBlueColor = (theme: Theme, shade: 50 | 100 | 200 | 400 | 500 | 600 | 700 | 800 | 900): string => {
+  try {
+    const customPalette = theme.palette as any;
+    if (customPalette.blues && customPalette.blues[shade]) {
+      return customPalette.blues[shade];
+    }
+    console.warn(`Blues palette or shade ${shade} not found, using primary color`);
+    return theme.palette.primary.main;
+  } catch (error) {
+    console.error('Error accessing blues palette:', error);
+    return theme.palette.primary.main;
+  }
+};
+
+const getGreenColor = (theme: Theme, shade: 50 | 100 | 200 | 400 | 500 | 600 | 700 | 800 | 900): string => {
+  try {
+    const customPalette = theme.palette as any;
+    if (customPalette.greens && customPalette.greens[shade]) {
+      return customPalette.greens[shade];
+    }
+    console.warn(`Greens palette or shade ${shade} not found, using fallback green`);
+    return '#4CAF50'; // Fallback to Material Design green
+  } catch (error) {
+    console.error('Error accessing greens palette:', error);
+    return '#4CAF50';
+  }
+};
+
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   border: 0,
   padding: "0px 12px",
+  // Height and flex properties will be handled in sx props for better control
   "& .MuiDataGrid-overlayWrapper": {
     height: "100px",
   },
@@ -56,8 +88,12 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     width: "calc(var(--DataGrid-rowWidth) + 24px)",
     margin: "0px -12px",
   },
+  // Alternating row colors: Blue for 1st, 3rd, 5th... and Green for 2nd, 4th, 6th...
+  [`& .${gridClasses.row}.odd`]: {
+    backgroundColor: alpha(getBlueColor(theme, 600), 0.2), // Blue background for odd rows (1st, 3rd, 5th...)
+  },
   [`& .${gridClasses.row}.even`]: {
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: alpha(getGreenColor(theme, 600), 0.2), // Green background for even rows (2nd, 4th, 6th...)
   },
   [`& .${gridClasses.row}.error`]: {
     color: "rgba(255, 0, 0, 0.5)",
@@ -69,13 +105,19 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     borderRadius: "0px",
   },
   "& .MuiDataGrid-row.Mui-selected": {
-    backgroundColor: alpha(theme.palette.blues[600], 0.4),
+    backgroundColor: alpha(getBlueColor(theme, 600), 0.6),
     "&:hover": {
-      backgroundColor: alpha(theme.palette.blues[600], 0.4),
+      backgroundColor: alpha(getBlueColor(theme, 600), 0.6),
     },
   },
-  "& .MuiDataGrid-row:hover": {
-    backgroundColor: alpha(theme.palette.blues[600], 0.4),
+  "& .MuiDataGrid-row.odd:hover": {
+    backgroundColor: alpha(getBlueColor(theme, 600), 0.4), // Darker blue on hover for blue rows
+    ".actionButton": {
+      display: "block",
+    },
+  },
+  "& .MuiDataGrid-row.even:hover": {
+    backgroundColor: alpha(getGreenColor(theme, 600), 0.4), // Darker green on hover for green rows
     ".actionButton": {
       display: "block",
     },
@@ -108,6 +150,7 @@ export default function ColouredDataGridComponent({
   columnHeaderHeight,
   getRowClassName,
   disableMultipleRowSelection,
+  height,
 }: Readonly<{
   data: any[];
   headers: GridColDef<any>[];
@@ -127,9 +170,24 @@ export default function ColouredDataGridComponent({
   columnHeaderHeight?: number;
   getRowClassName?: any;
   disableMultipleRowSelection?: any;
+  height?: number | string; // Optional explicit height for the DataGrid container
 }>) {
   // useTranslations library for translations
   // const t = useTranslations();
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState<number>(height || 500);
+  
+  useEffect(() => {
+    if (height) {
+      setContainerHeight(height);
+    } else if (containerRef.current?.parentElement) {
+      const parentHeight = containerRef.current.parentElement.offsetHeight;
+      if (parentHeight > 0) {
+        setContainerHeight(parentHeight);
+      }
+    }
+  }, [height]);
 
   const StyledGridOverlay = styled("div")({
     display: "flex",
@@ -149,7 +207,15 @@ export default function ColouredDataGridComponent({
   }
 
   return (
-    <Box sx={{ height: "100%", width: "100%" }}>
+    <div 
+      ref={containerRef}
+      style={{ 
+        height: `${containerHeight}px`,
+        width: '100%',
+        minHeight: '400px',
+        position: 'relative'
+      }}
+    >
       <StyledDataGrid
         rows={data}
         columns={headers}
@@ -198,15 +264,16 @@ export default function ColouredDataGridComponent({
         getRowClassName={
           getRowClassName ??
           ((params) =>
-            params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd")
+            params.indexRelativeToCurrentPage % 2 === 0 ? "odd" : "even")
         }
         sx={{
-          width: "100%", // Or set a fixed width like '600px' to ensure scrollable behavior
-          overflowX: "auto", // Ensures horizontal scrolling is enabled
+          width: "100%",
+          height: `${containerHeight - 20}px`,
+          minHeight: '350px',
           ...sx,
         }}
         disableMultipleRowSelection={disableMultipleRowSelection ?? false}
       />
-    </Box>
+    </div>
   );
 }

@@ -2,10 +2,45 @@
 import { createTheme, PaletteMode, ThemeOptions } from '@mui/material';
 import { Inter } from 'next/font/google';
 
+// Extend Material-UI breakpoint types to include custom breakpoints
+declare module '@mui/material/styles' {
+  interface BreakpointOverrides {
+    mdTab: true; // Add custom mdTab breakpoint
+  }
+}
+
 const inter = Inter({ subsets: ['latin'] });
 
+// Define custom theme options interface
+interface CustomThemeOptions extends ThemeOptions {
+  palette?: ThemeOptions['palette'] & {
+    blues?: {
+      50: string;
+      100: string;
+      200: string;
+      400: string;
+      500: string;
+      600: string;
+      700: string;
+      800: string;
+      900: string;
+    };
+    greens?: {
+      50: string;
+      100: string;
+      200: string;
+      400: string;
+      500: string;
+      600: string;
+      700: string;
+      800: string;
+      900: string;
+    };
+  };
+}
+
 export const getTheme = (mode: PaletteMode = 'light') => {
-  const themeOptions: ThemeOptions = {
+  const themeOptions: CustomThemeOptions = {
     palette: {
       mode: mode ?? 'light',
       common: {
@@ -22,6 +57,17 @@ export const getTheme = (mode: PaletteMode = 'light') => {
         700: '#4334CE',
         800: '#372DA6',
         900: '#312C83',
+      },
+      greens: {
+        50: '#E8F5E8',
+        100: '#C8E6C8',
+        200: '#A5D6A5',
+        400: '#66BB6A',
+        500: '#4CAF50',
+        600: '#43A047',
+        700: '#388E3C',
+        800: '#2E7D32',
+        900: '#1B5E20',
       },
       grey: {
         50: '#F6F6F6',
