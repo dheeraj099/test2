@@ -2,6 +2,13 @@
 import { createTheme, PaletteMode, ThemeOptions } from '@mui/material';
 import { Inter } from 'next/font/google';
 
+// Extend Material-UI breakpoint types to include custom breakpoints
+declare module '@mui/material/styles' {
+  interface BreakpointOverrides {
+    mdTab: true; // Add custom mdTab breakpoint
+  }
+}
+
 const inter = Inter({ subsets: ['latin'] });
 
 // Define custom theme options interface
