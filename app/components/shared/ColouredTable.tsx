@@ -2,7 +2,24 @@
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
 import Box from "@mui/material/Box";
-import { alpha, styled, SxProps } from "@mui/material/styles";
+import { alpha, styled, SxProps, Theme } from "@mui/material/styles";
+
+// Ensure custom theme types are available
+declare module '@mui/material/styles' {
+  interface Palette {
+    blues?: {
+      50?: string;
+      100?: string;
+      200?: string;
+      400?: string;
+      500?: string;
+      600?: string;
+      700?: string;
+      800?: string;
+      900?: string;
+    };
+  }
+}
 import {
   DataGrid,
   gridClasses,
@@ -13,6 +30,11 @@ import {
   GridRowSpacingParams,
 } from "@mui/x-data-grid";
 // import { useTranslations } from "next-intl";
+
+// Helper function to safely access custom theme colors
+const getBlueColor = (theme: Theme, shade: keyof NonNullable<Theme['palette']['blues']>): string => {
+  return theme.palette.blues?.[shade] || theme.palette.primary.main;
+};
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
@@ -69,13 +91,13 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     borderRadius: "0px",
   },
   "& .MuiDataGrid-row.Mui-selected": {
-    backgroundColor: alpha(theme.palette.blues[600], 0.4),
+    backgroundColor: alpha(getBlueColor(theme, '600'), 0.4),
     "&:hover": {
-      backgroundColor: alpha(theme.palette.blues[600], 0.4),
+      backgroundColor: alpha(getBlueColor(theme, '600'), 0.4),
     },
   },
   "& .MuiDataGrid-row:hover": {
-    backgroundColor: alpha(theme.palette.blues[600], 0.4),
+    backgroundColor: alpha(getBlueColor(theme, '600'), 0.4),
     ".actionButton": {
       display: "block",
     },
